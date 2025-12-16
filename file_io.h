@@ -3,8 +3,8 @@
 
 #include "gamestate.h"
 
-#define MAPS_DIR "maps"
-#define SAVES_DIR "saves"
+#define MAPS_DIR "maps"//地图文件夹
+#define SAVES_DIR "saves"//// 存档文件夹
 
 typedef struct {
     char level_name[MAX_MAP_NAME];
@@ -15,10 +15,10 @@ typedef struct {
     int path_length;
 } SaveInfo;
 
-int load_map_list(GameState* state);
-int load_map(GameState* state, const char* filename);
+int load_map_list(GameState* state);//加载可用地图列表
+int load_map(GameState* state, const char* filename);//加载特定地图文件
 int save_game(const GameState* state);
-int load_save(GameState* state, const char* level_name);
+int load_save(GameState* state, const char* level_name);//加载存档
 SaveInfo get_save_info(const char* level_name);
 int clear_save(const char* level_name);
 

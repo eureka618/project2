@@ -22,14 +22,29 @@ int load_map_list(GameState* state) {
     int count = 0;
 
     while ((entry = readdir(dir)) != NULL && count < MAX_SAVES) {
-        if (entry->d_type == DT_REG) {
-            char* ext = strrchr(entry->d_name, '.');
-            if (ext && strcmp(ext, ".map") == 0) {
-                // 移除扩展名
-                strncpy(state->level_names[count], entry->d_name, strlen(entry->d_name) - 4);
-                state->level_names[count][strlen(entry->d_name) - 4] = '\0';
-                count++;
-            }
+#ifdef _WIN32
+        // Windows 下通过文件属性判断是否为普通文件
+        char full_path[256];
+        snprintf(full_path, sizeof(full_path), "%s/%s", MAPS_DIR, entry->d_name);
+
+        DWORD attr = GetFileAttributesA(full_path);
+        if (attr == INVALID_FILE_ATTRIBUTES) continue;
+
+        // 判断是否为普通文件（非目录）
+        if (attr & FILE_ATTRIBUTE_DIRECTORY) continue; // 跳过目录
+#else
+        // 非 Windows 系统通过 d_type 判断
+        if (entry->d_type != DT_REG) continue; // 只处理普通文件
+#endif
+
+        // 检查文件扩展名是否为 .map
+        char* ext = strrchr(entry->d_name, '.');
+        if (ext && strcmp(ext, ".map") == 0) {
+            // 移除扩展名（保留文件名部分）
+            size_t name_len = strlen(entry->d_name) - 4; // 减去 .map 的长度
+            strncpy(state->level_names[count], entry->d_name, name_len);
+            state->level_names[count][name_len] = '\0'; // 手动添加字符串结束符
+            count++;
         }
     }
 
@@ -37,7 +52,6 @@ int load_map_list(GameState* state) {
     state->level_count = count;
     return count > 0;
 }
-
 int load_map(GameState* state, const char* filename) {
     char filepath[256];
     snprintf(filepath, sizeof(filepath), "%s/%s.map", MAPS_DIR, filename);
@@ -45,7 +59,7 @@ int load_map(GameState* state, const char* filename) {
     FILE* file = fopen(filepath, "r");
     if (!file) {
         return 0;
-    }
+    }//打开地图文件
 
     // 读取地图基本信息
     fscanf(file, "%d %d", &state->map.width, &state->map.height);

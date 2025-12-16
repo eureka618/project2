@@ -6,7 +6,6 @@ set(CMAKE_C_STANDARD 11)
 # 创建可执行文件（去掉 STATIC）
 add_executable(project2
         library.c
-        project1.origin.c
         gamestate.h
         undostack.h
         file_io.h

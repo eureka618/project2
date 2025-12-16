@@ -8,7 +8,7 @@
 
 void game_init(GameState* state, int level_index) {
     // 重置游戏会话
-    memset(&state->session, 0, sizeof(GameSession));
+    memset(&state->session, 0, sizeof(GameSession));//初始化信息
 
     // 加载地图
     if (!load_map(state, state->level_names[level_index])) {

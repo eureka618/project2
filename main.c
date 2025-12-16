@@ -144,3 +144,25 @@ void handle_mode_menu(GameState* state) {
             break;
     }
 }
+void handle_level_menu(GameState* state) {
+    char input = get_user_input();  // 获取用户输入（W/S/Enter）
+
+    switch (toupper(input)) {
+        case 'W':
+            // 上移选择项（防止越界）
+            if (state->menu_selection > 0) {
+                state->menu_selection--;
+            }
+            break;
+        case 'S':
+            // 下移选择项（防止越界）
+            if (state->menu_selection < state->level_count - 1) {
+                state->menu_selection++;
+            }
+            break;
+        case '\r':  // 回车键确认选择
+            // 选中关卡后，跳转到加载存档菜单
+            state->current_screen = MENU_LOAD_SAVE;
+            break;
+    }
+}

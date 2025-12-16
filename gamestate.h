@@ -27,7 +27,7 @@ typedef enum {
     MENU_MODE,
     MENU_LOAD_SAVE,
     GAME_PLAYING,
-    GAME_SUMMARY
+    GAME_SUMMARY,
 } GameScreen;
 
 typedef struct {

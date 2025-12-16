@@ -15,8 +15,8 @@ typedef struct {
     UndoNode* current;
     UndoNode* head;
     UndoNode* tail;
-    int count;
-} UndoStack;
+    int count;//计数并防止溢出
+} UndoStack;//undoStack 负责 “管理所有 UndoNode 组成的链
 
 void undo_stack_init(UndoStack* stack);
 void undo_stack_push(UndoStack* stack, const GameState* state);
