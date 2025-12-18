@@ -95,8 +95,8 @@ void render_load_save_menu(GameState* state, const SaveInfo* info) {
                info->treasures_found, info->total_treasures);
         printf("\n");
 
-        print_menu_item(0, "是", state->menu_selection == 0);
-        print_menu_item(1, "否", state->menu_selection == 1);
+        print_menu_item(0, "是", state->load_save_selection == 0);
+        print_menu_item(1, "否", state->load_save_selection == 1);
     } else {
         printf("这是全新的关卡！\n\n");
         print_menu_item(0, "开始游戏", 1);

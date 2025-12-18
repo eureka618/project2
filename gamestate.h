@@ -24,8 +24,8 @@ typedef enum {
 typedef enum {
     MENU_MAIN,
     MENU_LEVEL,
-    MENU_MODE,
     MENU_LOAD_SAVE,
+    MENU_MODE,
     GAME_PLAYING,
     GAME_SUMMARY,
 } GameScreen;
@@ -74,6 +74,8 @@ typedef struct {
     GameScreen current_screen;
     int menu_selection;
     int level_count;
+    int mode_selection;
+    int load_save_selection;
     char level_names[MAX_SAVES][MAX_MAP_NAME];
     char last_played_level[MAX_MAP_NAME];
 } GameState;

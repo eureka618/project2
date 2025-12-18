@@ -6,10 +6,72 @@
 #include "file_io.h"
 #include "undostack.h"
 #include "utils.h"
-void handle_level_menu(GameState* state) ;
-void handle_main_menu(GameState* state) ;
-void handle_load_save_menu(GameState* state, const SaveInfo* info) ;
-void handle_mode_menu(GameState* state) ;
+void handle_main_menu(GameState* state) {
+    char input = get_user_input();
+    switch (toupper(input)) {
+        case 'W':
+            if (state->menu_selection > 0) state->menu_selection--;
+            break;
+        case 'S':
+            if (state->menu_selection < state->level_count) state->menu_selection++;
+            break;
+        case '\r': // Enter
+            if (state->menu_selection == state->level_count) {
+                // 退出
+                exit(0);
+            } else {
+                state->current_screen = MENU_LOAD_SAVE;
+            }
+            break;
+    }
+}
+
+
+void handle_load_save_menu(GameState* state, const SaveInfo* info) {
+    char input = get_user_input();
+
+    switch (toupper(input)) {
+        case 'W':
+            if (state->load_save_selection > 0) state->load_save_selection--;
+            break;
+        case 'S':
+            if (state->load_save_selection < 1) state->load_save_selection++;
+            break;
+        case '\r': // Enter
+            if (state->load_save_selection == 0) {
+                // 加载存档
+                if (load_save(state, state->level_names[state->menu_selection])) {
+                    state->current_screen = GAME_PLAYING;
+                }
+            } else {
+                // 重新开始
+                clear_save(state->level_names[state->menu_selection]);
+                state->current_screen = MENU_MODE;
+            }
+            state->load_save_selection = 0; // 重置选择
+            break;
+    }
+}
+
+void handle_mode_menu(GameState* state) {
+    state->mode_selection=0;
+    char input = get_user_input();
+    switch (toupper(input)) {
+        case 'W':
+            if (state->mode_selection > 0) state->mode_selection--;
+            break;
+        case 'S':
+            if (state->mode_selection < 1) state->mode_selection++;
+            break;
+        case '\r': // Enter
+            state->session.control_mode = (ControlMode)state->menu_selection;
+            game_init(state, state->menu_selection);
+            state->current_screen = GAME_PLAYING;
+            break;
+    }
+
+}
+
 int main() {
     GameState state = {0};
     UndoStack undo_stack;
@@ -37,7 +99,6 @@ int main() {
 
             case MENU_LEVEL:
                 render_level_menu(&state);
-                handle_level_menu(&state);
                 break;
 
             case MENU_LOAD_SAVE: {
@@ -81,88 +142,3 @@ int main() {
     return 0;
 }
 
-void handle_main_menu(GameState* state) {
-    char input = get_user_input();
-
-    switch (toupper(input)) {
-        case 'W':
-            if (state->menu_selection > 0) state->menu_selection--;
-            break;
-        case 'S':
-            if (state->menu_selection < state->level_count) state->menu_selection++;
-            break;
-        case '\r': // Enter
-            if (state->menu_selection == state->level_count) {
-                // 退出
-                exit(0);
-            } else {
-                state->current_screen = MENU_LOAD_SAVE;
-            }
-            break;
-    }
-}
-
-void handle_load_save_menu(GameState* state, const SaveInfo* info) {
-    char input = get_user_input();
-
-    switch (toupper(input)) {
-        case 'W':
-            if (state->menu_selection > 0) state->menu_selection--;
-            break;
-        case 'S':
-            if (state->menu_selection < 1) state->menu_selection++;
-            break;
-        case '\r': // Enter
-            if (state->menu_selection == 0) {
-                // 加载存档
-                if (load_save(state, state->level_names[state->menu_selection])) {
-                    state->current_screen = GAME_PLAYING;
-                }
-            } else {
-                // 重新开始
-                clear_save(state->level_names[state->menu_selection]);
-                state->current_screen = MENU_MODE;
-            }
-            break;
-    }
-}
-
-void handle_mode_menu(GameState* state) {
-    char input = get_user_input();
-
-    switch (toupper(input)) {
-        case 'W':
-            if (state->menu_selection > 0) state->menu_selection--;
-            break;
-        case 'S':
-            if (state->menu_selection < 1) state->menu_selection++;
-            break;
-        case '\r': // Enter
-            state->session.control_mode = (ControlMode)state->menu_selection;
-            game_init(state, state->menu_selection);
-            state->current_screen = GAME_PLAYING;
-            break;
-    }
-}
-void handle_level_menu(GameState* state) {
-    char input = get_user_input();  // 获取用户输入（W/S/Enter）
-
-    switch (toupper(input)) {
-        case 'W':
-            // 上移选择项（防止越界）
-            if (state->menu_selection > 0) {
-                state->menu_selection--;
-            }
-            break;
-        case 'S':
-            // 下移选择项（防止越界）
-            if (state->menu_selection < state->level_count - 1) {
-                state->menu_selection++;
-            }
-            break;
-        case '\r':  // 回车键确认选择
-            // 选中关卡后，跳转到加载存档菜单
-            state->current_screen = MENU_LOAD_SAVE;
-            break;
-    }
-}
