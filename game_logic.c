@@ -10,6 +10,8 @@ void game_init(GameState* state, int level_index) {
     // 重置游戏会话
     memset(&state->session, 0, sizeof(GameSession));//初始化信息
 
+    // 设置最后游玩关卡
+    strcpy(state->last_played_level, state->level_names[level_index]);
     // 加载地图
     if (!load_map(state, state->level_names[level_index])) {
         // 错误处理
@@ -132,11 +134,8 @@ void check_treasure_collection(GameState* state) {
         int tx = state->map.treasures[i].x;
         int ty = state->map.treasures[i].y;
 
-        // 检查上下左右相邻位置
-        if ((abs(state->session.player.x - tx) == 1 &&
-             state->session.player.y == ty) ||
-            (abs(state->session.player.y - ty) == 1 &&
-             state->session.player.x == tx)) {
+        // 检查玩家是否与宝藏位置重合
+        if (state->session.player.x == tx && state->session.player.y == ty) {
 
             state->map.treasures[i].collected = 1;
             state->session.treasures_found++;

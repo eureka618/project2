@@ -1,4 +1,5 @@
 #include "uimanager.h"
+#include "game_logic.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -7,7 +8,6 @@
 void clear_screen() {
     CLEAR_SCREEN();
 }
-
 void print_header(const char* text) {
     printf("========================================\n");
     printf("          %s\n", text);
@@ -40,7 +40,7 @@ void render_main_menu(GameState* state) {
         // 检查是否有存档
         SaveInfo info = get_save_info(state->level_names[i]);
         char menu_text[100];
-        if (info.save_time > 0) {
+        if (strcmp(state->last_played_level, state->level_names[i]) == 0) {
             snprintf(menu_text, sizeof(menu_text), "开始 <%s> (上次)",
                      state->level_names[i]);
         } else {

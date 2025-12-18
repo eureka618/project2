@@ -75,6 +75,7 @@ typedef struct {
     int menu_selection;
     int level_count;
     char level_names[MAX_SAVES][MAX_MAP_NAME];
+    char last_played_level[MAX_MAP_NAME];
 } GameState;
 
 #endif

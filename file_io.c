@@ -4,7 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#define MAPS_DIR "./maps"
+#define SAVES_DIR "./saves"
 #ifdef _WIN32
 #include <windows.h>
 #include "utils.h"
@@ -13,10 +14,11 @@
 int load_map_list(GameState* state) {
     DIR* dir = opendir(MAPS_DIR);
     if (!dir) {
+        printf("无法打开目录: %s\n", MAPS_DIR);
         // 创建maps目录
         create_directory(MAPS_DIR);
         return 0;
-    }
+    }//打开MAPS_DIR目录，若打开失败（目录不存在），则创建目录并返回 0；
 
     struct dirent* entry;
     int count = 0;
