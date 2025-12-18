@@ -104,18 +104,17 @@ void handle_main_menu(GameState* state) {
 
 void handle_load_save_menu(GameState* state, const SaveInfo* info) {
     char input = get_user_input();
-    static int load_save_selection=0;
 
     switch (toupper(input)) {
         case 'W':
-            if (load_save_selection > 0) load_save_selection--;
+            if (state->menu_selection > 0) state->menu_selection--;
             break;
         case 'S':
-            if (load_save_selection< 1) load_save_selection++;
+            if (state->menu_selection < 1) state->menu_selection++;
             break;
         case '\r': // Enter
-            if (load_save_selection == 0) {
-                // 加载存档--使用当前选中的关卡
+            if (state->menu_selection == 0) {
+                // 加载存档
                 if (load_save(state, state->level_names[state->menu_selection])) {
                     state->current_screen = GAME_PLAYING;
                 }
@@ -123,29 +122,25 @@ void handle_load_save_menu(GameState* state, const SaveInfo* info) {
                 // 重新开始
                 clear_save(state->level_names[state->menu_selection]);
                 state->current_screen = MENU_MODE;
-                state->session.current_level = state->menu_selection;
             }
-            load_save_selection=0;
             break;
     }
 }
 
 void handle_mode_menu(GameState* state) {
     char input = get_user_input();
-    static int mode_selection=0;
 
     switch (toupper(input)) {
         case 'W':
-            if (mode_selection > 0)  mode_selection--;
+            if (state->menu_selection > 0) state->menu_selection--;
             break;
         case 'S':
-            if (mode_selection < 1) mode_selection++;
+            if (state->menu_selection < 1) state->menu_selection++;
             break;
         case '\r': // Enter
             state->session.control_mode = (ControlMode)state->menu_selection;
             game_init(state, state->menu_selection);
             state->current_screen = GAME_PLAYING;
-            mode_selection=0;
             break;
     }
 }

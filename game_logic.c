@@ -37,9 +37,6 @@ void game_init(GameState* state, int level_index) {
 }
 
 int move_player(GameState* state, char direction, UndoStack* undo_stack) {
-    // 保存当前状态到撤销栈
-    undo_stack_push(undo_stack, state);
-
     int new_x = state->session.player.x;
     int new_y = state->session.player.y;
 
@@ -61,8 +58,6 @@ int move_player(GameState* state, char direction, UndoStack* undo_stack) {
             return 0;
         case 'Q':
             state->session.game_over = 1;
-            strcpy(state->session.movement_path + state->session.path_length, "Q");
-            state->session.path_length++;
             return 1;
         default:
             if (state->session.control_mode == REALTIME_MODE) {
@@ -73,8 +68,14 @@ int move_player(GameState* state, char direction, UndoStack* undo_stack) {
             }
     }
 
+    // 除了撤销/恢复操作外，其他移动操作需要保存状态
+    if (direction != 'Z' && direction != 'Y') {
+        // 保存当前状态到撤销栈
+        undo_stack_push(undo_stack, state);
+    }
+
     // 记录移动路径（除原地不动外）
-    if (direction != 'I') {
+    if (direction != 'I' && direction != 'Z' && direction != 'Y') {
         state->session.movement_path[state->session.path_length] = toupper(direction);
         state->session.path_length++;
     }
@@ -106,6 +107,7 @@ int move_player(GameState* state, char direction, UndoStack* undo_stack) {
 
     return 1;
 }
+
 
 int is_valid_move(const GameState* state, int x, int y) {
     if (x < 0 || x >= state->map.width ||

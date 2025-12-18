@@ -4,8 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#define MAPS_DIR "./maps"
-#define SAVES_DIR "./saves"
+
 #ifdef _WIN32
 #include <windows.h>
 #include "utils.h"

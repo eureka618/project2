@@ -7,16 +7,16 @@ void undo_stack_init(UndoStack* stack) {
     stack->head = NULL;
     stack->tail = NULL;
     stack->count = 0;
-}//初始化存档管理器
+}
 
 void undo_stack_push(UndoStack* stack, const GameState* state) {
-    //新增游戏存档
-    undo_stack_clear_after(stack);// 清除当前节点之后的所有节点
+    // 清除当前节点之后的所有节点（当有新操作时）
+    undo_stack_clear_after(stack);
 
     UndoNode* new_node = (UndoNode*)malloc(sizeof(UndoNode));
-    if (!new_node) return;//确保malloc正确分配内存
+    if (!new_node) return;
 
-    // 复制状态，把新存档存到链表末尾
+    // 复制状态
     memcpy(&new_node->state, state, sizeof(GameState));
     new_node->prev = stack->tail;
     new_node->next = NULL;
@@ -28,35 +28,41 @@ void undo_stack_push(UndoStack* stack, const GameState* state) {
     }
 
     stack->tail = new_node;
-    stack->current = new_node;//设置当前节点为最新节点
-    stack->count++;//记录当前栈的节点数，将新操作节点添加到undostack末尾
+    stack->current = new_node;
+    stack->count++;
 
-    // 限制栈大小，一次减少一次
+    // 限制栈大小
     if (stack->count > MAX_UNDO_STACK) {
         UndoNode* to_remove = stack->head;
         stack->head = to_remove->next;
-        if (stack->head) stack->head->prev = NULL;//新节点存在删除前驱
+        if (stack->head) stack->head->prev = NULL;
         free(to_remove);
         stack->count--;
     }
 }
 
 int undo_stack_undo(UndoStack* stack, GameState* state) {
+    // 检查是否可以撤销（当前节点存在且不是第一个节点）
     if (!stack->current || !stack->current->prev) {
-        return 0; // 什么都还没动或者是第一步
+        return 0;
     }
 
+    // 移动到前一个状态
     stack->current = stack->current->prev;
+    // 恢复状态
     memcpy(state, &stack->current->state, sizeof(GameState));
     return 1;
 }
 
 int undo_stack_redo(UndoStack* stack, GameState* state) {
+    // 检查是否可以恢复（当前节点存在且不是最后一个节点）
     if (!stack->current || !stack->current->next) {
-        return 0; // 无法恢复
+        return 0;
     }
 
+    // 移动到后一个状态
     stack->current = stack->current->next;
+    // 恢复状态
     memcpy(state, &stack->current->state, sizeof(GameState));
     return 1;
 }
@@ -64,6 +70,7 @@ int undo_stack_redo(UndoStack* stack, GameState* state) {
 void undo_stack_clear_after(UndoStack* stack) {
     if (!stack->current) return;
 
+    // 删除当前节点之后的所有节点
     UndoNode* node = stack->current->next;
     while (node) {
         UndoNode* next = node->next;
@@ -72,10 +79,9 @@ void undo_stack_clear_after(UndoStack* stack) {
         stack->count--;
     }
 
-    if (stack->current) {
-        stack->current->next = NULL;//切断链表
-    }
-    stack->tail = stack->current;//当前节点成为了新的尾节点
+    // 断开链接
+    stack->current->next = NULL;
+    stack->tail = stack->current;
 }
 
 void undo_stack_free(UndoStack* stack) {
