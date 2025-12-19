@@ -39,6 +39,10 @@ void game_init(GameState* state, int level_index) {
 int move_player(GameState* state, char direction, UndoStack* undo_stack) {
     int new_x = state->session.player.x;
     int new_y = state->session.player.y;
+    if (toupper(direction) != 'Z' && toupper(direction) != 'Y') {
+        // 只有普通移动才保存当前状态到撤销栈
+        undo_stack_push(undo_stack, state);
+    }
 
     switch (toupper(direction)) {
         case 'W': new_y--; break;
@@ -69,7 +73,7 @@ int move_player(GameState* state, char direction, UndoStack* undo_stack) {
     }
 
     // 除了撤销/恢复操作外，其他移动操作需要保存状态
-    if (direction != 'Z' && direction != 'Y') {
+    if (direction != 'I'&&direction != 'Z' && direction != 'Y') {
         // 保存当前状态到撤销栈
         undo_stack_push(undo_stack, state);
     }

@@ -144,6 +144,9 @@ int load_save(GameState* state, const char* level_name) {
 
     // 读取游戏会话
     fread(&state->session, sizeof(GameSession), 1, file);
+    // 确保游戏状态正确
+    state->session.game_over = 0;  // 重置游戏结束标志
+
 
     // 读取宝藏状态
     for (int i = 0; i < state->map.treasure_count; i++) {

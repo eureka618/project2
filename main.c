@@ -37,19 +37,27 @@ void handle_load_save_menu(GameState* state, const SaveInfo* info) {
         case 'S':
             if (state->load_save_selection < 1) state->load_save_selection++;
             break;
+            // 在 handle_load_save_menu 函数中
         case '\r': // Enter
-            if (state->load_save_selection == 0) {
-                // 加载存档
-                if (load_save(state, state->level_names[state->menu_selection])) {
-                    state->current_screen = GAME_PLAYING;
+            if (info->save_time > 0) {
+                // 有存档的情况
+                if (state->load_save_selection == 0) {
+                    // 加载存档
+                    if (load_save(state, state->level_names[state->menu_selection])) {
+                        state->current_screen = GAME_PLAYING;
+                    }
+                } else {
+                    // 重新开始
+                    clear_save(state->level_names[state->menu_selection]);
+                    state->current_screen = MENU_MODE;
                 }
             } else {
-                // 重新开始
-                clear_save(state->level_names[state->menu_selection]);
+                // 无存档的情况，直接进入模式选择
                 state->current_screen = MENU_MODE;
             }
             state->load_save_selection = 0; // 重置选择
             break;
+
     }
 }
 

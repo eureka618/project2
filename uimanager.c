@@ -99,7 +99,7 @@ void render_load_save_menu(GameState* state, const SaveInfo* info) {
         print_menu_item(1, "否", state->load_save_selection == 1);
     } else {
         printf("这是全新的关卡！\n\n");
-        print_menu_item(0, "开始游戏", 1);
+        print_menu_item(0, "开始游戏", state->load_save_selection==0);
     }
 
     print_hint("按 W/S 选择，按 Enter 确认");
